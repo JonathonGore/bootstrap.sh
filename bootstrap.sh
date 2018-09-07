@@ -25,6 +25,7 @@ fi
 
 if [ ! -d "${VUNDLE_DIR}" ] ; then
 	# Only clone if vundle does not already exist
+	# TODO: If installed consider maybe doing a git pull
 	git clone https://github.com/VundleVim/Vundle.vim.git ${VUNDLE_DIR}
 fi
 
@@ -37,7 +38,7 @@ echo "updating dotfiles in ~/"
 mv dotfiles/.profile ~/.profile
 mv dotfiles/.vimrc ~/.vimrc
 mv dotfiles/.gitconfig ~/.gitconfig
-sudo rm -r dotfiles
+yes | rm -r dotfiles
 
 # Install all plugins defined in ~/.vimrc
 vim +PluginInstall +qall
