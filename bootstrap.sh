@@ -48,4 +48,8 @@ vim +PluginInstall +qall
 # Once plugins are install we need to specifically compile YouCompleteMe.
 # This only installs autocomplate for go - `--all` is also available but it 
 # requires all binaries (rust, c++) to be present in the toolchain in PATH.
-~/.vim/bundle/YouCompleteMe/install.py --go-completer
+if [ -x $(command -v go) ]; then
+	~/.vim/bundle/YouCompleteMe/install.py --go-completer
+fi
+
+~/.vim/bundle/YouCompleteMe/install.py --clang-completer
