@@ -1,23 +1,43 @@
 #!/bin/bash
 set -e
 
+if [ -n "${DEBUG}" ]; then
+	set -x
+fi
+
 # This script is intended for bootstrapping a new Mac development machine
 # with useful tools for developing.
 
-if  [[ !  -z  $(command -v brew) ]]; then
-	/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+OS=$(uname)
+VUNDLE_DIR=${HOME}/.vim/bundle/Vundle.vim
+
+# Only install homebrew if we are on MacOS (Darwin)
+if [ "${OS}" == "Darwin" ]; then
+	if ! [ -x  $(command -v brew) ]; then
+		echo "Installing Homebrew"
+		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+	fi
+
+	# Override the default system vim with brew vim
+	echo "Installing updated Vim"
+	brew install vim --with-override-system-vi
 fi
 
-# Override the default system vim with brew vim
-brew install vim --with-override-system-vi
+if [ ! -d "${VUNDLE_DIR}" ] ; then
+	# Only clone if vundle does not already exist
+	git clone https://github.com/VundleVim/Vundle.vim.git ${VUNDLE_DIR}
+fi
 
-# Set up vim package manager Vundle
-git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+if [ ! -d "dotfiles" ] ; then
+	git clone https://github.com/JonathonGore/dotfiles.git
+fi
 
-# clone dotfiles from github
-git clone https://github.com/JonathonGore/dotfiles.git
-mv dotfiles/* ~/
-rm -r dotfiles
+# TODO: Issue a command for the user to accept or deny overwriting of dotfiles
+echo "updating dotfiles in ~/"
+mv dotfiles/.profile ~/.profile
+mv dotfiles/.vimrc ~/.vimrc
+mv dotfiles/.gitconfig ~/.gitconfig
+sudo rm -r dotfiles
 
 # Install all plugins defined in ~/.vimrc
 vim +PluginInstall +qall
